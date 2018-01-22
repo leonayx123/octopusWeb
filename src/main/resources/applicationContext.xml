@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context-3.2.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+     ">
+
+
+    <!-- 自动扫描文件 -->
+    <context:component-scan base-package="com.sdyc.octopus">
+        <!--过滤掉 Controller -->
+        <context:exclude-filter type="annotation"
+                                expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation"
+                                expression="org.springframework.web.bind.annotation.RequestMapping"/>
+    </context:component-scan>
+
+    <!-- 支持注解配置 -->
+    <context:annotation-config>
+
+
+    </context:annotation-config>
+
+    <!--配置文件占位符替换-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <bean lazy-init="true" id="dataSource"
+          class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close"
+          scope="singleton">
+        <property name="user" value="${jdbc.user}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+        <property name="jdbcUrl" value="${jdbc.url}"></property>
+        <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+        <property name="maxPoolSize" value="30"></property>
+        <property name="initialPoolSize" value="2"></property>
+        <property name="maxIdleTime" value="14400"></property>
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate" >
+        <constructor-arg index="0" ref="dataSource" />
+    </bean>
+
+
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+        <qualifier value="transactionManager"></qualifier>
+    </bean>
+    <!--注解方式实现事务-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+
+</beans>
