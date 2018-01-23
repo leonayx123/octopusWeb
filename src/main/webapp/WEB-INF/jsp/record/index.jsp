@@ -37,6 +37,7 @@
     <input type="text" class="form-control"　v-model="slctUser" placeholder="用户">
     <label for="name">交易所（高）：</label>
     <select class="form-control" v-model="slctHEx">
+      <option value="">ALL</option>
       <option value="binance">binance</option>
       <option value="gateIo">gateIo</option>
       <option value="huobipro">huobipro</option>
@@ -45,6 +46,7 @@
     </select>
     <label for="name">交易所（低）：</label>
     <select class="form-control" v-model="slctLEx">
+      <option value="">ALL</option>
       <option value="binance">binance</option>
       <option value="gateIo">gateIo</option>
       <option value="huobipro">huobipro</option>
@@ -53,6 +55,7 @@
     </select>
     <label for="name">状态：</label>
     <select class="form-control" v-model="slctStatus">
+      <option value="">ALL</option>
       <option value="0">price diff too small</option>
       <option value="1">successful</option>
       <option value="2">tradable value too small</option>
@@ -117,7 +120,7 @@
             activeItem:"exchangeRecode",
             slctHEx:null,
             slctLEx:null,
-            slctStatus:null,
+            slctStatus:1,
             slctUser:null,
             table:null//表格对象
         },
