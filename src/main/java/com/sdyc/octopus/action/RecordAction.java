@@ -9,6 +9,7 @@ import com.sdyc.octopus.dto.RecordBtcAddDTO;
 import com.sdyc.octopus.service.record.RecordService;
 import com.sdyc.octopus.utils.DataTablesPagination;
 import com.sdyc.octopus.utils.PageInfo;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -39,8 +40,8 @@ public class RecordAction extends BaseAction {
 
     @ResponseBody
     @RequestMapping("/trade.do")
-    public DataTablesPagination trade(Integer status, Date bDate, Date eDate, Exchange hEx, Exchange lEx, Coin coin, DataTablesPagination page){
-        String userId = getUserFromSession();
+    public DataTablesPagination trade(String userId,Integer status, @DateTimeFormat(pattern = "yyyy-MM-dd HH") Date bDate,
+                                      @DateTimeFormat(pattern = "yyyy-MM-dd HH")  Date eDate, Exchange hEx, Exchange lEx, Coin coin, DataTablesPagination page){
 
         DataTablesPagination tradeTurnover = recordService.getTradeTurnover(userId, status, bDate, eDate, hEx, lEx, coin, page);
         return  tradeTurnover;

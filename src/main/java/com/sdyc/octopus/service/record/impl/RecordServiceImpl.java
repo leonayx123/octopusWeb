@@ -9,6 +9,7 @@ import com.sdyc.octopus.dto.RecordBtcAddDTO;
 import com.sdyc.octopus.service.record.RecordService;
 import com.sdyc.octopus.utils.DataTablesPagination;
 import com.sdyc.octopus.utils.PageInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -32,9 +33,13 @@ public class RecordServiceImpl implements RecordService {
     public DataTablesPagination getTradeTurnover(String userId, Integer status, Date bDate, Date eDate, Exchange hEx, Exchange lEx, Coin coin, DataTablesPagination page) {
         Assert.notNull(userId,"用户不能为空");
 
-        StringBuffer sql=new StringBuffer(" from record_trade_turnover where userId=?");
+        StringBuffer sql=new StringBuffer(" from record_trade_turnover where 1=1");
         ArrayList<Object> args=new ArrayList<>();
-        args.add(userId);
+        if(StringUtils.isNotBlank(userId)){
+            sql.append(" AND userId like ?");
+            args.add("%"+userId+"%");
+        }
+
         //状态
         if(null!=status){
             sql.append(" AND status=?");
