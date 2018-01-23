@@ -1,15 +1,18 @@
 package com.sdyc.octopus.service.record.impl;
 
 import com.sdyc.octopus.beans.IcoAccount;
+import com.sdyc.octopus.comm.Coin;
+import com.sdyc.octopus.comm.Exchange;
 import com.sdyc.octopus.dto.AccCoinBalanceDTO;
 import com.sdyc.octopus.dto.AccUserBtcDTO;
 import com.sdyc.octopus.dto.RecordBtcAddDTO;
-import com.sdyc.octopus.dto.RecordTradeTurnoverDTO;
 import com.sdyc.octopus.service.record.RecordService;
+import com.sdyc.octopus.utils.DataTablesPagination;
 import com.sdyc.octopus.utils.PageInfo;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -26,24 +29,49 @@ public class RecordServiceImpl implements RecordService {
 
 
     @Override
-    public List<RecordTradeTurnoverDTO> getTradeTurnover(String userId, Map<String, Object> params, PageInfo pageInfo) {
+    public DataTablesPagination getTradeTurnover(String userId, Integer status, Date bDate, Date eDate, Exchange hEx, Exchange lEx, Coin coin, DataTablesPagination page) {
+        Assert.notNull(userId,"用户不能为空");
 
-        StringBuffer sql=new StringBuffer("select *  from record_trade_turnover where userId=?");
+        StringBuffer sql=new StringBuffer(" from record_trade_turnover where userId=?");
         ArrayList<Object> args=new ArrayList<>();
         args.add(userId);
-        if(params!=null&&params.size()>0){
-           Iterator<String> it= params.keySet().iterator();
-            while(it.hasNext()){
-                String key=it.next();
-                sql.append(" and ").append(key).append(" = ? ");
-                Object value=params.get(key);
-                args.add(value);
-            }
+        //状态
+        if(null!=status){
+            sql.append(" AND status=?");
+            args.add(status);
         }
-        sql.append(" order by time desc limit ")
-                .append(pageInfo.getStart()).append(",").append(pageInfo.getRowPerPage());
+        //时间
+        if(null!=bDate){
+            sql.append(" AND time>=?");
+            args.add(bDate);
+        }
+        if(null!=eDate){
+            sql.append(" AND time<=?");
+            args.add(eDate);
+        }
+        //交易所
+        if(null!=hEx){
+            sql.append(" AND higherEx=?");
+            args.add(hEx.toString());
+        }
+        if(null!=lEx){
+            sql.append(" AND lowerEx=?");
+            args.add(lEx.toString());
+        }
+        //币种
+        if(null!=coin){
+            sql.append(" AND coinId=?");
+            args.add(coin.toString());
+        }
+        int count =jdbcTemplate.queryForObject("SELECT count(0)"+sql, Integer.class,args.toArray());
+        page.setiTotalRecords(count);
 
-        return jdbcTemplate.query(sql.toString(),args.toArray(),new BeanPropertyRowMapper<RecordTradeTurnoverDTO>(RecordTradeTurnoverDTO.class)) ;
+        sql.append(" order by time desc limit ?,?");
+        args.add(page.getStart());
+        args.add(page.getLength());
+        List<Map<String, Object>> maps = jdbcTemplate.queryForList("SELECT * " + sql, args.toArray());
+        page.setData(maps);
+        return page;
     }
 
     @Override

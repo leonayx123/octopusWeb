@@ -1,17 +1,17 @@
 package com.sdyc.octopus.dto;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
  * Created by yangxun on 2018-01-22.
  */
 @Entity
-@Table(name = "record_trade_turnover", schema = "", catalog = "btcfactory")
-public class RecordTradeTurnoverDTO {
+@Table(name = "record_trade_turnover")
+public class RecordTradeTurnoverDTO  implements Serializable {
     private long seqkey;
     private String userId;
-    private String exchangeId;
     private String coinId;
     private int status;
     private String higherEx;
@@ -32,6 +32,7 @@ public class RecordTradeTurnoverDTO {
     private String msg;
     private Double highPrice;
     private Double lowerPrice;
+    private String exchangeId;
 
     public void setStatus(Integer status) {
         this.status = status;
@@ -58,7 +59,8 @@ public class RecordTradeTurnoverDTO {
     }
 
     @Basic
-    @Column(name = "exchangeId")
+    @Transient
+//    @Column(name = "exchangeId")
     public String getExchangeId() {
         return exchangeId;
     }
