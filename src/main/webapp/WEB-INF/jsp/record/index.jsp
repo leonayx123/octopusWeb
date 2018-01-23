@@ -121,7 +121,7 @@
             slctHEx:null,
             slctLEx:null,
             slctStatus:1,
-            slctUser:null,
+            slctUser:'${userId}',
             table:null//表格对象
         },
         created:function(){

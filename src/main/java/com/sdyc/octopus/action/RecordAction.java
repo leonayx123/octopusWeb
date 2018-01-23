@@ -32,8 +32,8 @@ public class RecordAction extends BaseAction {
 
 
     @RequestMapping("/index.do")
-    public ModelAndView goIndex(){
-        String userId = getUserFromSession();
+    public ModelAndView goIndex(String userId){
+//        String userId = getUserFromSession();
         return new ModelAndView("record/index").addObject("userId",userId);
 
     }
